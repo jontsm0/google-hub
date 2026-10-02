@@ -1,123 +1,89 @@
 # Plano de Desenvolvimento — Google Hub
 
-Este documento organiza as etapas de estudo, planejamento, implementação e evolução do Google Hub.
+Documento de referência para orientar implementação, decisões técnicas e evolução do Google Hub.
 
-## 1. Visão do projeto
+## Sumário
 
-O Google Hub será uma aplicação pessoal que utiliza uma única conta Google para centralizar informações de diferentes serviços, inicialmente Google Drive, Google Calendar e Google Tasks.
+- [1. Visão e escopo](#1-visão-e-escopo)
+- [2. Princípios do projeto](#2-princípios-do-projeto)
+- [3. Stack e arquitetura base](#3-stack-e-arquitetura-base)
+- [4. Fases, marcos e entregas](#4-fases-marcos-e-entregas)
+- [5. Decisões técnicas iniciais](#5-decisões-técnicas-iniciais)
+- [6. Segurança e conformidade](#6-segurança-e-conformidade)
+- [7. Critérios do MVP](#7-critérios-do-mvp)
+- [8. Roadmap pós-MVP](#8-roadmap-pós-mvp)
+- [9. Progresso e próximos passos](#9-progresso-e-próximos-passos)
 
-A aplicação não pretende substituir os produtos oficiais do Google. Ela funcionará como uma camada de organização, relacionamento e acesso aos recursos existentes.
+## 1. Visão e escopo
 
-```text
-Google Drive + Google Calendar + Google Tasks
-                    ↓
-            Backend do Google Hub
-                    ↓
-            Dashboard e projetos
-```
+O Google Hub será uma aplicação pessoal para centralizar informações de serviços Google em uma experiência única e contextual.
 
-## 2. Inspiração no 9Drive
+Escopo inicial do MVP:
 
-O 9Drive será utilizado como estudo de caso para compreender como uma aplicação pode conectar-se a serviços externos e criar uma interface própria.
+- uma conta Google;
+- integração com Drive, Calendar e Tasks;
+- dashboard com visão unificada;
+- organização por projetos e recursos relacionados.
 
-### Conceitos aproveitados
+Fora do MVP:
 
-- autenticação OAuth;
-- gerenciamento de conexões externas;
-- armazenamento seguro de tokens;
-- backend intermediário;
-- organização modular;
-- integração com APIs externas;
-- sincronização de dados;
-- dashboard unificado.
+- replicar integralmente interfaces oficiais Google;
+- integração profunda com serviços sem API pública estável;
+- automações avançadas e orquestrações complexas.
 
-### Conceitos que não fazem parte do MVP
+## 2. Princípios do projeto
 
-- múltiplas contas Google Drive;
-- roteamento de uploads;
-- distribuição de quota;
-- integração S3;
-- seleção entre diferentes provedores de armazenamento.
+- **Hub, não cópia**: conectar contextos sem substituir os apps oficiais.
+- **Escopos progressivos**: pedir permissões apenas quando necessário.
+- **MVP incremental**: entregar valor em ciclos pequenos e verificáveis.
+- **Segurança por padrão**: tratar tokens e credenciais como dados críticos.
+- **Clareza de status**: separar explicitamente o que é implementado e o que é planejado.
 
-O objetivo é aproveitar a ideia arquitetural de um hub, e não reproduzir integralmente o 9Drive.
+## 3. Stack e arquitetura base
 
-## 3. Stack planejada
+### Stack inicial
 
-### Backend
+- Backend: Python 3.12+, FastAPI, Uvicorn
+- Frontend: React, TypeScript
+- Dados: SQLite local (evolução futura para banco gerenciado)
+- Integrações: Google APIs + OAuth 2.0
 
-- Python 3.12+
-- FastAPI
-- Uvicorn
-- Pydantic
-- SQLAlchemy 2
-- Alembic
-- pytest
-
-### Frontend
-
-- React
-- TypeScript
-- Vite
-- React Router
-- CSS ou Tailwind CSS
-
-### Integrações
-
-- Google Drive API
-- Google Calendar API
-- Google Tasks API
-- OAuth 2.0
-
-### Banco de dados
-
-- SQLite durante o desenvolvimento;
-- PostgreSQL ou Cloud SQL em uma futura versão de produção.
-
-### Infraestrutura futura
-
-- Docker;
-- Google Cloud Run;
-- Google Cloud SQL;
-- Google Secret Manager.
-
-## 4. Arquitetura inicial
+### Arquitetura base
 
 ```text
 Frontend React
       ↓ HTTP/JSON
 Backend FastAPI
-      ├── Autenticação e OAuth
+      ├── Autenticação/OAuth
       ├── Regras de negócio
       ├── Integrações Google
-      └── Projetos e relacionamentos
-             ├── SQLite
-             ├── Google Drive API
-             ├── Google Calendar API
-             └── Google Tasks API
+      └── Projetos/relacionamentos
+             ├── SQLite local
+             ├── Drive API
+             ├── Calendar API
+             └── Tasks API
 ```
 
-O frontend não deverá chamar diretamente as APIs Google. O backend será responsável por autenticação, tokens, regras de negócio, normalização das respostas e controle de erros.
+## 4. Fases, marcos e entregas
 
-## 5. Fases de desenvolvimento
+| Fase | Objetivo | Entregáveis principais | Status |
+|---|---|---|---|
+| F0 | Fundação do repositório | Estrutura inicial, docs base, plano | Concluída |
+| F1 | Base de backend | `GET /health`, setup local, dependências | Em andamento |
+| F2 | Modelo de dados inicial | entidades de projeto e vínculo de recurso | Planejada |
+| F3 | OAuth Google | início/callback, sessão e token seguro | Planejada |
+| F4 | Integração Drive | listagem de arquivos recentes | Planejada |
+| F5 | Integração Calendar | próximos eventos no dashboard | Planejada |
+| F6 | Integração Tasks | tarefas pendentes no dashboard | Planejada |
+| F7 | Dashboard e projetos | visão unificada e relacionamentos | Planejada |
+| F8 | Qualidade e release inicial | testes, checklist de segurança, documentação | Planejada |
 
-### Fase 0 — Preparação
+### Marco técnico mínimo (F1)
 
-- Criar o repositório.
-- Estudar o README e a estrutura do 9Drive.
-- Definir o escopo do MVP.
-- Criar um projeto no Google Cloud.
-- Estudar Python, FastAPI, APIs REST e OAuth 2.0.
-
-### Fase 1 — Backend básico
-
-- Criar ambiente virtual Python.
-- Instalar FastAPI e Uvicorn.
-- Criar `app/main.py`.
-- Criar o endpoint `GET /health`.
-- Configurar variáveis de ambiente.
-- Validar a API através do Swagger.
-
-Resposta esperada:
+- ambiente virtual Python configurável;
+- dependências iniciais documentadas;
+- aplicação FastAPI executando localmente;
+- endpoint de saúde respondendo:
 
 ```json
 {
@@ -125,367 +91,74 @@ Resposta esperada:
 }
 ```
 
-### Fase 2 — Banco de dados
+## 5. Decisões técnicas iniciais
 
-- Configurar SQLite.
-- Criar conexão com SQLAlchemy.
-- Configurar Alembic.
-- Criar os modelos iniciais.
-- Criar migrations.
-- Implementar o CRUD de projetos.
+1. **Python/FastAPI no backend** para acelerar aprendizado e produtividade.
+2. **React/TypeScript no frontend** para interface moderna e tipada.
+3. **Uma conta Google no MVP** para reduzir complexidade inicial.
+4. **9Drive como referência conceitual** (não dependência).
+5. **Integração por API + links oficiais** quando a experiência nativa for mais adequada.
 
-Modelos iniciais:
+Registro formal da fundação: [0001-project-foundation](./decisions/0001-project-foundation.md).
 
-```text
-User
-Project
-ExternalResource
-ProjectResource
-```
+## 6. Segurança e conformidade
 
-Endpoints iniciais:
+- não versionar `.env` com dados reais;
+- usar `.env.example` com placeholders seguros;
+- isolar segredos e tokens de logs;
+- aplicar mínimo privilégio em OAuth;
+- revisar periodicamente scopes e permissões.
 
-```text
-GET  /api/projects
-POST /api/projects
-GET  /api/projects/{project_id}
-PATCH /api/projects/{project_id}
-DELETE /api/projects/{project_id}
-```
-
-### Fase 3 — Autenticação Google
-
-- Criar credenciais OAuth no Google Cloud.
-- Configurar as URLs de redirecionamento.
-- Implementar `GET /auth/google/start`.
-- Implementar `GET /auth/google/callback`.
-- Trocar o código de autorização por tokens.
-- Armazenar tokens de forma segura.
-- Implementar `GET /auth/me`.
-- Implementar logout e desconexão.
-
-Começar com os escopos básicos:
-
-```text
-openid
-email
-profile
-```
-
-As permissões de Drive, Calendar e Tasks devem ser solicitadas progressivamente.
-
-### Fase 4 — Google Drive
-
-- Criar cliente autenticado do Drive.
-- Listar arquivos recentes.
-- Filtrar itens da lixeira.
-- Normalizar nome, tipo, data e link.
-- Exibir os dados no frontend.
-- Adicionar ação para abrir o arquivo no Drive.
-
-Endpoint:
-
-```text
-GET /api/drive/recent
-```
-
-O hub deve armazenar referências e metadados, não duplicar os arquivos do usuário.
-
-### Fase 5 — Google Calendar
-
-- Criar cliente autenticado do Calendar.
-- Buscar eventos futuros.
-- Definir o intervalo de consulta.
-- Ordenar eventos por data.
-- Normalizar os dados.
-- Exibir os próximos eventos no dashboard.
-- Adicionar ação para abrir no Google Calendar.
-
-Endpoint:
-
-```text
-GET /api/calendar/events
-```
-
-### Fase 6 — Google Tasks
-
-- Listar listas de tarefas.
-- Selecionar a lista principal.
-- Buscar tarefas pendentes.
-- Normalizar título, status e vencimento.
-- Exibir tarefas no dashboard.
-- Permitir associação com projetos.
-
-Endpoints:
-
-```text
-GET /api/tasks/lists
-GET /api/tasks
-```
-
-### Fase 7 — Dashboard
-
-Criar uma visão inicial com:
-
-```text
-Resumo do dia
-Próximos eventos
-Tarefas pendentes
-Arquivos recentes
-Projetos ativos
-Atalhos para os serviços Google
-```
-
-O objetivo é que o usuário consiga entender suas atividades sem abrir imediatamente várias aplicações.
-
-### Fase 8 — Projetos e relacionamentos
-
-Criar o principal diferencial do Google Hub: organizar recursos de serviços diferentes dentro de um projeto.
-
-Exemplo:
-
-```text
-Projeto: Estudos de Python
-├── Evento do Calendar
-├── Tarefa do Tasks
-├── Arquivo do Drive
-└── Documento relacionado
-```
-
-Funcionalidades:
-
-- criar projeto;
-- editar projeto;
-- excluir projeto;
-- adicionar recurso;
-- remover recurso;
-- abrir recurso externo;
-- listar atividades relacionadas.
-
-### Fase 9 — Sincronização
-
-Inicialmente, a sincronização será feita sob demanda quando o dashboard for aberto.
-
-Posteriormente, poderá ser criado um processo em segundo plano para atualizar dados periodicamente.
-
-Registros futuros:
-
-```text
-SyncJob
-SyncCursor
-SyncError
-```
-
-### Fase 10 — Gmail
-
-Após a conclusão do MVP, adicionar uma integração inicial com Gmail para:
-
-- listar mensagens importantes ou recentes;
-- associar conversas a projetos;
-- criar tarefas a partir de e-mails;
-- abrir conversas no Gmail;
-- futuramente gerar resumos.
-
-Essa fase exige atenção especial por envolver dados altamente sensíveis.
-
-### Fase 11 — Gemini
-
-Utilizar IA somente depois que os dados do hub estiverem organizados.
-
-Possíveis usos:
-
-- resumir um projeto;
-- sugerir próximos passos;
-- transformar e-mail em tarefa;
-- resumir eventos da semana;
-- gerar checklists;
-- identificar pendências.
-
-O usuário deverá saber quais dados serão enviados para análise.
-
-### Fase 12 — Testes
-
-Criar testes unitários e de integração para:
-
-- autenticação;
-- normalização de respostas;
-- projetos;
-- relacionamentos;
-- autorização;
-- tokens expirados;
-- respostas simuladas das APIs Google.
-
-Ferramentas:
-
-```text
-pytest
-pytest-asyncio
-httpx
-unittest.mock
-```
-
-### Fase 13 — Segurança
-
-- Nunca versionar arquivos `.env`.
-- Utilizar `.env.example`.
-- Criptografar tokens.
-- Não exibir tokens nos logs.
-- Validar dados de entrada.
-- Proteger endpoints privados.
-- Solicitar o mínimo de escopos possível.
-- Implementar desconexão da conta.
-- Utilizar HTTPS em produção.
-- Usar Secret Manager no deploy.
-
-Variáveis sensíveis esperadas:
+Variáveis sensíveis previstas para ambientes locais/produção:
 
 ```text
 GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET
+GOOGLE_REDIRECT_URI
 TOKEN_ENCRYPTION_KEY
 DATABASE_URL
 SESSION_SECRET
-GEMINI_API_KEY
 ```
 
-### Fase 14 — Docker
+## 7. Critérios do MVP
 
-Depois da execução local funcionar:
+- [ ] Login Google funcional
+- [ ] Permissões progressivas por serviço
+- [ ] Arquivos recentes (Drive)
+- [ ] Próximos eventos (Calendar)
+- [ ] Tarefas pendentes (Tasks)
+- [ ] Dashboard unificado
+- [ ] CRUD de projetos
+- [ ] Vínculos de recursos por projeto
+- [ ] Links para abrir recursos no Google
+- [ ] Documentação de setup atualizada
 
-- criar Dockerfile do backend;
-- criar Dockerfile do frontend;
-- criar `docker-compose.yml`;
-- padronizar o ambiente de desenvolvimento;
-- preparar o projeto para deploy.
+## 8. Roadmap pós-MVP
 
-### Fase 15 — Deploy
+Prioridades previstas:
 
-Arquitetura futura:
+1. Gmail (contexto de comunicação)
+2. Docs e Sheets (produção)
+3. Gemini (resumos e assistência)
+4. Keep e Chat (organização e colaboração)
+5. NotebookLM (integração indireta por atalhos/fluxos)
+6. Docker e deploy em Google Cloud
 
-```text
-Frontend → Cloud Run
-Backend  → Cloud Run
-Banco    → Cloud SQL
-Segredos → Secret Manager
-```
+## 9. Progresso e próximos passos
 
-Etapas:
+### Concluído
 
-- criar imagens Docker;
-- publicar no Artifact Registry;
-- configurar Cloud Run;
-- configurar o banco de produção;
-- cadastrar secrets;
-- atualizar as URLs OAuth;
-- configurar domínio e HTTPS;
-- validar logs e erros.
+- definição de proposta e posicionamento;
+- escolha da stack inicial;
+- documentação estruturante;
+- scaffold inicial do repositório.
 
-## 6. Critérios de conclusão do MVP
+### Próximo passo imediato
 
-```text
-[ ] Login com Google
-[ ] Autorização dos serviços necessários
-[ ] Arquivos recentes do Drive
-[ ] Próximos eventos do Calendar
-[ ] Tarefas pendentes do Tasks
-[ ] Criação de projetos
-[ ] Associação de arquivo ao projeto
-[ ] Associação de evento ao projeto
-[ ] Associação de tarefa ao projeto
-[ ] Links para abrir recursos no Google
-[ ] Dashboard funcional
-[ ] Testes básicos
-[ ] Documentação de instalação
-```
-
-## 7. Estratégia de estudos
-
-A sequência recomendada é:
-
-```text
-1. Python básico
-2. Módulos e pacotes
-3. Tipagem
-4. Ambientes virtuais
-5. HTTP e JSON
-6. FastAPI
-7. Pydantic
-8. SQLAlchemy
-9. Alembic
-10. OAuth 2.0
-11. APIs externas
-12. React e TypeScript
-13. Testes
-14. Docker
-15. Google Cloud
-```
-
-Para cada tema:
-
-1. estudar a teoria;
-2. criar um exemplo pequeno;
-3. aplicar no Google Hub;
-4. documentar o aprendizado;
-5. criar um commit específico.
-
-## 8. Estratégia de commits
-
-Usar mensagens claras:
-
-```text
-chore: initialize backend project
-feat: add health endpoint
-feat: create project model
-feat: add Google OAuth flow
-feat: integrate Google Drive
-feat: integrate Google Calendar
-feat: integrate Google Tasks
-feat: create dashboard
-feat: associate resources with projects
-test: add project service tests
-docs: update setup instructions
-```
-
-## 9. Critério de sucesso
-
-O projeto será bem-sucedido quando demonstrar o seguinte fluxo:
-
-```text
-Uma conta Google
-        ↓
-Vários serviços conectados
-        ↓
-Dados normalizados
-        ↓
-Projetos e relacionamentos
-        ↓
-Dashboard único
-```
-
-O foco não é criar uma cópia dos produtos Google, mas demonstrar como diferentes serviços podem ser conectados por uma aplicação própria e apresentados em um contexto mais organizado.
-
-## 10. Progresso
-
-### Outubro de 2026
-
-- [x] Definição da proposta do Google Hub.
-- [x] Estudo inicial do 9Drive.
-- [x] Identificação do padrão de hub e integrações.
-- [x] Decisão de trabalhar com uma única conta Google.
-- [x] Escolha inicial de Python e FastAPI.
-- [x] Criação do repositório.
-- [x] Definição do MVP.
-- [ ] Estrutura inicial do backend.
-- [ ] Estudo prático de FastAPI.
-- [ ] Estudo prático de OAuth 2.0.
-- [ ] Configuração do Google Cloud.
-
-### Próximo objetivo
-
-Criar a primeira API FastAPI com:
+Criar a primeira iteração funcional da API com:
 
 ```text
 GET /health
-GET /api/projects
-POST /api/projects
 ```
+
+Depois, iniciar autenticação Google e base de projetos.

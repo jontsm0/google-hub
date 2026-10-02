@@ -1,350 +1,209 @@
 # Google Hub
 
-> Um hub pessoal para centralizar serviços do ecossistema Google em uma única experiência.
+Projeto pessoal de portfólio para centralizar, em uma única interface, dados e ações de serviços Google usados no dia a dia.
 
-## Sobre o projeto
+## Posicionamento
 
-O **Google Hub** é um projeto pessoal desenvolvido para reunir, em um único ambiente, informações e ações relacionadas aos principais serviços Google utilizados no dia a dia.
+O **Google Hub** investiga como criar uma camada própria de organização sobre o ecossistema Google, sem substituir os produtos oficiais.
 
-A proposta não é substituir aplicações como Google Drive, Google Calendar, Google Tasks, Gmail ou Gemini. O objetivo é criar uma camada de organização que conecte esses serviços, apresente seus dados em um contexto comum e facilite o acesso entre eles.
-
-Por exemplo, um projeto pode reunir:
-
-- eventos do Google Calendar;
-- tarefas do Google Tasks;
-- arquivos do Google Drive;
-- documentos e planilhas;
-- e-mails relacionados;
-- resumos e sugestões gerados por inteligência artificial.
+- foco em produtividade pessoal com **uma conta Google**;
+- experiência unificada para reduzir troca de abas e perda de contexto;
+- arquitetura preparada para evolução incremental.
 
 ## Motivação
 
-As ferramentas do ecossistema Google são poderosas, mas normalmente são utilizadas em ambientes separados. Mesmo quando existe integração entre elas, o usuário frequentemente precisa abrir várias abas, alternar entre diferentes interfaces e manter manualmente o contexto das informações.
-
-Este projeto busca investigar como uma aplicação própria pode:
-
-- centralizar informações de diferentes serviços;
-- relacionar eventos, tarefas, arquivos e mensagens;
-- criar uma visão orientada a projetos;
-- reduzir a necessidade de alternar entre várias aplicações;
-- utilizar APIs externas de forma segura;
-- aplicar conhecimentos de Python, APIs, OAuth e desenvolvimento web.
+Ferramentas como Drive, Calendar, Tasks, Gmail, Docs e Sheets são poderosas, mas operam em contextos separados. O Google Hub busca conectar esses contextos por projeto, tarefa e rotina.
 
 ## Relação com o 9Drive
 
-O projeto utiliza o repositório [9Drive](https://github.com/zenhosta/9drive) como referência conceitual e arquitetural.
+O repositório [zenhosta/9drive](https://github.com/zenhosta/9drive) é uma **referência de estudo arquitetural** para padrões de integração, OAuth e organização modular.
 
-O 9Drive demonstra como criar uma camada intermediária entre o usuário e serviços externos, utilizando:
+- não é dependência direta deste projeto;
+- não será copiado integralmente;
+- inspira decisões de desenho técnico para um hub pessoal.
 
-```text
-Serviço externo
-      ↓
-OAuth e permissões
-      ↓
-Backend intermediário
-      ↓
-Banco de dados
-      ↓
-Interface própria
-```
+## MVP atual e escopo futuro
 
-No 9Drive, essa ideia é aplicada à conexão de contas Google Drive e armazenamento S3.
+### MVP (em construção)
 
-Neste projeto, o mesmo conceito será estudado e adaptado para uma única conta Google conectada a vários serviços:
+- autenticação Google (escopos progressivos);
+- integração inicial com Drive, Calendar e Tasks;
+- dashboard unificado com visão de contexto;
+- organização de recursos por projeto.
 
-```text
-Uma conta Google
-      ↓
-Permissões OAuth
-      ↓
-Backend do Google Hub
-      ↓
-Integrações com APIs Google
-      ↓
-Dashboard unificado
-```
+### Escopo futuro (planejado)
 
-O 9Drive não será utilizado integralmente como base do produto. Ele será utilizado como estudo de caso para compreender:
-
-- integração com serviços externos;
-- gerenciamento de conexões;
-- armazenamento seguro de tokens;
-- organização modular do backend;
-- sincronização de dados;
-- criação de uma experiência unificada.
-
-## Objetivos
-
-### Objetivo geral
-
-Construir um hub pessoal capaz de reunir serviços Google e organizá-los em torno de projetos, tarefas e atividades.
-
-### Objetivos específicos
-
-- Implementar autenticação com Google OAuth.
-- Conectar uma conta Google ao sistema.
-- Integrar inicialmente Google Drive, Google Calendar e Google Tasks.
-- Exibir informações desses serviços em um dashboard.
-- Criar projetos dentro do hub.
-- Relacionar arquivos, eventos e tarefas.
-- Permitir que o usuário abra os recursos nas aplicações oficiais do Google.
-- Criar uma arquitetura preparada para futuras integrações.
-- Aprender e aplicar Python em um projeto real.
-
-## Escopo inicial
-
-A primeira versão do projeto terá como foco:
-
-```text
-Autenticação Google
-    ↓
-Google Drive
-    ↓
-Google Calendar
-    ↓
-Google Tasks
-    ↓
-Dashboard
-    ↓
-Projetos e relacionamentos
-```
-
-### Funcionalidades planejadas para o MVP
-
-- Login com Google.
-- Conexão com a conta Google do usuário.
-- Listagem de arquivos recentes do Google Drive.
-- Listagem de próximos eventos do Google Calendar.
-- Listagem de tarefas pendentes do Google Tasks.
-- Dashboard com visão resumida.
-- Criação de projetos.
-- Associação de arquivos, eventos e tarefas a projetos.
-- Links para abrir os recursos nas aplicações oficiais.
-
-## Integrações futuras
-
-Após o MVP, poderão ser estudadas as seguintes integrações:
-
-- Gmail;
-- Google Docs;
-- Google Sheets;
-- Google Keep;
-- Google Chat;
-- Gemini;
-- NotebookLM;
-- Google Workspace Add-ons.
-
-Nem todos os serviços possuem o mesmo nível de integração. Algumas funcionalidades poderão ser implementadas através de APIs oficiais, enquanto outras poderão ser disponibilizadas apenas como links ou atalhos para as aplicações originais.
-
-## Exemplo de uso
-
-Imagine o projeto:
-
-```text
-Planejamento de viagem
-```
-
-O hub poderá reunir:
-
-### Google Calendar
-
-- voo de ida;
-- reserva do hotel;
-- passeio programado.
-
-### Google Tasks
-
-- confirmar reserva;
-- comprar seguro;
-- separar documentos.
-
-### Google Drive
-
-- passagens;
-- comprovantes;
-- roteiro;
-- documentos pessoais.
-
-### Gmail
-
-- confirmação da companhia aérea;
-- mensagens do hotel;
-- comprovantes de reserva.
-
-Em vez de procurar essas informações em vários aplicativos, o usuário poderá visualizar os recursos relacionados dentro do mesmo projeto.
-
-## Arquitetura planejada
-
-```text
-┌──────────────────────────────┐
-│        Frontend React        │
-│ Dashboard, projetos e telas  │
-└──────────────┬───────────────┘
-               │ HTTP/JSON
-               ▼
-┌──────────────────────────────┐
-│        Backend FastAPI       │
-│ Regras de negócio e OAuth    │
-└──────────────┬───────────────┘
-               │
-       ┌───────┴────────┐
-       ▼                ▼
-┌─────────────┐  ┌──────────────┐
-│ Banco local │  │ Google APIs  │
-│ SQLite      │  │ Drive        │
-│             │  │ Calendar     │
-│             │  │ Tasks        │
-└─────────────┘  └──────────────┘
-```
+- Gmail, Docs, Sheets, Gemini, Keep, Chat e NotebookLM;
+- automações entre serviços (ex.: e-mail para tarefa);
+- camadas de observabilidade, segurança e deploy em nuvem.
 
 ## Stack planejada
 
-### Backend
+![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-Frontend-61DAFB?logo=react&logoColor=111111)
+![TypeScript](https://img.shields.io/badge/TypeScript-UI-3178C6?logo=typescript&logoColor=white)
+![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Futuro-4285F4?logo=googlecloud&logoColor=white)
 
-- Python 3.12+
-- FastAPI
-- Uvicorn
-- Pydantic
-- SQLAlchemy
-- Alembic
-- pytest
+- **Backend**: Python, FastAPI, Uvicorn
+- **Frontend**: React, TypeScript
+- **Dados**: SQLite (local), evolução para banco gerenciado em produção
+- **Integrações**: APIs Google com OAuth 2.0
 
-### Integrações
+## Arquitetura (alto nível)
 
-- Google API Client para Python
-- Google Auth
-- OAuth 2.0
-- APIs do Google Drive, Calendar e Tasks
+```mermaid
+flowchart LR
+    UI[Frontend React + TypeScript] --> API[Backend FastAPI]
+    API --> DB[(SQLite local)]
+    API --> OAuth[Google OAuth 2.0]
+    OAuth --> Services[APIs Google\nDrive | Calendar | Tasks | ...]
+```
 
-### Frontend
+## Fluxo de dados (MVP)
 
-- React
-- TypeScript
-- Vite
-- React Router
-- CSS ou Tailwind CSS
+```mermaid
+sequenceDiagram
+    participant U as Usuário
+    participant FE as Frontend
+    participant BE as Backend
+    participant GA as APIs Google
 
-### Banco de dados
+    U->>FE: Acessa dashboard
+    FE->>BE: Requisição autenticada
+    BE->>GA: Consulta dados autorizados
+    GA-->>BE: Recursos normalizados
+    BE-->>FE: Resposta agregada por contexto
+    FE-->>U: Visão unificada
+```
 
-- SQLite no desenvolvimento
-- PostgreSQL ou Cloud SQL em uma futura versão de produção
+## Mapa mental
 
-### Infraestrutura futura
+```mermaid
+mindmap
+  root((Google Hub))
+    MVP
+      OAuth progressivo
+      Drive
+      Calendar
+      Tasks
+      Dashboard
+    Arquitetura
+      Frontend React TS
+      Backend FastAPI
+      Banco local
+      APIs Google
+    Evolução
+      Gmail
+      Docs
+      Sheets
+      Gemini
+      Keep
+      Chat
+      NotebookLM
+      Deploy GCP
+```
 
-- Docker
-- Google Cloud Run
-- Google Cloud SQL
-- Google Secret Manager
+Referências de navegação:
+- [Plano de desenvolvimento](./docs/PLANO_DE_DESENVOLVIMENTO.md)
+- [Arquitetura detalhada](./docs/architecture/README.md)
+- [Roadmap](./docs/roadmap/README.md)
 
-## Estrutura inicial
+## Status de integrações Google
+
+| Serviço | Status no projeto | Estratégia inicial | Documentação oficial |
+|---|---|---|---|
+| Google Drive | Planejado para MVP | API oficial + links para abrir no Google | https://developers.google.com/workspace/drive/api/guides/about-sdk |
+| Google Calendar | Planejado para MVP | API oficial para eventos e agenda | https://developers.google.com/workspace/calendar/api/guides/overview |
+| Google Tasks | Planejado para MVP | API oficial para listas e tarefas | https://developers.google.com/workspace/tasks/overview |
+| Gmail | Futuro | Leitura contextual e vínculos por projeto | https://developers.google.com/workspace/gmail/api/guides |
+| Google Docs | Futuro | Criação/edição orientada por fluxo | https://developers.google.com/workspace/docs/api/how-tos/overview |
+| Google Sheets | Futuro | Dados tabulares e apoio a projetos | https://developers.google.com/workspace/sheets/api/guides/concepts |
+| Gemini | Futuro | Resumos e assistente de produtividade | https://ai.google.dev/gemini-api/docs |
+| Google Keep | Futuro | Notas e organização pessoal | https://developers.google.com/workspace/keep |
+| Google Chat | Futuro | Conversas e ações contextuais | https://developers.google.com/workspace/chat |
+| NotebookLM | Futuro | Atalhos e integração indireta | https://notebooklm.google/ |
+
+## Estrutura do repositório
 
 ```text
 google-hub/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py
-│   │   ├── config.py
-│   │   ├── database.py
+│   │   ├── api/
 │   │   ├── auth/
+│   │   ├── config/
+│   │   ├── db/
 │   │   ├── integrations/
-│   │   │   ├── drive.py
-│   │   │   ├── calendar.py
-│   │   │   └── tasks.py
 │   │   ├── projects/
-│   │   └── resources/
+│   │   ├── resources/
+│   │   ├── services/
+│   │   ├── shared/
+│   │   └── main.py
 │   ├── tests/
-│   ├── requirements.txt
-│   └── .env.example
+│   │   ├── unit/
+│   │   └── integration/
+│   ├── .env.example
+│   ├── README.md
+│   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/
+│   │   ├── assets/
 │   │   ├── components/
-│   │   └── lib/
-│   └── package.json
+│   │   ├── layouts/
+│   │   ├── lib/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── styles/
+│   │   └── types/
+│   └── README.md
 ├── docs/
+│   ├── architecture/
+│   ├── decisions/
+│   ├── guides/
+│   ├── roadmap/
+│   ├── LINKEDIN.md
 │   └── PLANO_DE_DESENVOLVIMENTO.md
-├── .gitignore
-└── README.md
+├── infra/
+│   ├── docker/
+│   └── gcp/
+├── scripts/
+└── tests/
+    └── fixtures/
 ```
 
-## Como executar futuramente
+## Roadmap de setup
 
-O projeto ainda está em fase inicial de planejamento e desenvolvimento.
-
-A execução planejada do backend será semelhante a:
-
-```bash
-cd backend
-
-python -m venv .venv
-source .venv/bin/activate
-
-pip install -r requirements.txt
-
-uvicorn app.main:app --reload
-```
-
-No Windows PowerShell:
-
-```powershell
-cd backend
-
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-
-pip install -r requirements.txt
-
-uvicorn app.main:app --reload
-```
-
-O frontend será executado separadamente:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
+1. Estrutura base do repositório e documentação.
+2. Backend FastAPI mínimo (`GET /health`).
+3. Configuração de ambiente local e padrões de projeto.
+4. Primeira integração OAuth e coleta de dados de serviços MVP.
+5. Dashboard inicial e vínculos entre recursos.
 
 ## Segurança
 
-Como o projeto acessará dados pessoais do usuário, segurança será uma preocupação central.
+- Não versionar segredos ou `.env` reais.
+- Usar escopos OAuth mínimos e progressivos.
+- Tratar tokens como dados sensíveis.
+- Em produção, migrar segredos para serviço dedicado (ex.: Secret Manager).
 
-As principais práticas planejadas são:
+## Status
 
-- utilizar OAuth 2.0;
-- solicitar apenas as permissões necessárias;
-- armazenar tokens de forma criptografada;
-- nunca versionar arquivos `.env`;
-- utilizar variáveis de ambiente;
-- limitar o acesso aos endpoints protegidos;
-- registrar erros sem expor tokens;
-- utilizar HTTPS em produção;
-- considerar Google Secret Manager no deploy;
-- permitir que o usuário desconecte a conta Google;
-- separar permissões por serviço quando possível.
+- [x] Definição do posicionamento e escopo do projeto
+- [x] Estrutura inicial de diretórios e documentos base
+- [x] Starter backend com endpoint `GET /health`
+- [ ] Implementação da autenticação Google
+- [ ] Integrações MVP (Drive, Calendar, Tasks)
+- [ ] Dashboard inicial
 
-## Status do projeto
+## Documentação complementar
 
-```text
-[x] Definição da ideia
-[x] Estudo do 9Drive
-[x] Definição da stack inicial
-[ ] Criação da estrutura do projeto
-[ ] Endpoint de saúde da API
-[ ] Autenticação Google
-[ ] Integração com Google Drive
-[ ] Integração com Google Calendar
-[ ] Integração com Google Tasks
-[ ] Dashboard inicial
-[ ] Projetos e relacionamentos
-[ ] Testes automatizados
-[ ] Deploy
-```
+- [Texto para LinkedIn](./docs/LINKEDIN.md)
+- [Plano de desenvolvimento](./docs/PLANO_DE_DESENVOLVIMENTO.md)
+- [Arquitetura](./docs/architecture/README.md)
+- [Decisão 0001](./docs/decisions/0001-project-foundation.md)
 
+## Contribuição e nota de portfólio
 
-
-## Licença
-
-Este projeto é experimental e destinado a estudos, portfólio e aprendizado.
-
-A licença será definida conforme a evolução do projeto.
+Este repositório é público para estudo e portfólio. Sugestões de arquitetura, segurança e produto são bem-vindas via issue.
+Itens marcados como “futuro” são planejados e ainda não implementados.
